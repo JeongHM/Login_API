@@ -1,4 +1,5 @@
 import re
+import hashlib
 
 from models.model import db, Users
 
@@ -107,6 +108,16 @@ class UserService(object):
 
         return True
 
+    @staticmethod
+    def encrypt_password(password):
+        """
+        비밀번호 SHA256 암호화
+        :param password: 평문 Password
+        :return: Encrypted Password (String Object)
+        """
+        sha_signature = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        return sha_signature
+
     def create_user(self):
         """
         회원가입한 유저 정보 DB에 저장
@@ -119,6 +130,7 @@ class UserService(object):
         email = self._body.get('email')
         gender = self._body.get('gender')
 
+        password = self.encrypt_password(password=password)
         session = db.session()
 
         try:
@@ -139,3 +151,20 @@ class UserService(object):
             session.commit()
             session.close()
             return True
+
+    def login(self):
+        """
+        유저 로그인 (Email 기준으로 Password Value 비교)
+        :return: Boolean Object
+        """
+        email = self._body.get('email')
+        password = self._body.get('password')
+
+        user = Users.query.filter_by(email=email).first()
+        user_id = user.id
+        user_password = user.password
+
+        if not (user_password == self.encrypt_password(password=password)):
+            return False, None
+
+        return True, user_id
