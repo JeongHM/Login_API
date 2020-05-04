@@ -40,6 +40,7 @@ def user_registration():
 
 
 @user_blueprint.route('/login', methods=['POST'], endpoint='user_login')
+@response_format
 def user_login():
     body = dict(request.json)
 
@@ -49,17 +50,25 @@ def user_login():
     if not res:
         return RESPONSE_CODE[805], None
 
-    token = TokenService(body=body)
+    token = TokenService(user_id=user_id)
     access_token = token.create_token()
 
-    if not access_token or isinstance(access_token, dict):
+    if not access_token or not isinstance(access_token, dict):
         return RESPONSE_CODE[400], None
 
     return RESPONSE_CODE[200], access_token
 
 
 @user_blueprint.route('/logout', methods=['POST'], endpoint='user_logout')
+@response_format
 def user_logout():
+    body = dict(request.json)
+    access_token = body.get('access_token')
+
+    res = TokenService.delete_token(access_token=access_token)
+    if not res:
+        return RESPONSE_CODE[404]
+
     return RESPONSE_CODE[200], None
 
 
