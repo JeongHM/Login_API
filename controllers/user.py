@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 
-from utils.decorators import response_format
+from utils.decorators import response_format, token_required
 from utils.response_code import RESPONSE_CODE
 from services.internals.user import UserService
 from services.internals.token import TokenService
@@ -60,24 +60,38 @@ def user_login():
 
 
 @user_blueprint.route('/logout', methods=['POST'], endpoint='user_logout')
+@token_required
 @response_format
 def user_logout():
-    body = dict(request.json)
-    access_token = body.get('access_token')
+    header = dict(request.headers)
+    access_token = header.get('Access-Token')
 
     res = TokenService.delete_token(access_token=access_token)
+
     if not res:
         return RESPONSE_CODE[404]
 
     return RESPONSE_CODE[200], None
 
 
-@user_blueprint.route('/<int:user_id>/detail', methods=['GET'], endpoint='user_detail')
+@user_blueprint.route('/detail', methods=['GET'], endpoint='user_detail')
+@token_required
+@response_format
 def user_detail():
-    return RESPONSE_CODE[200], None
+    header = dict(request.headers)
+    access_token = header.get('Access-Token')
+
+    res, user_id = TokenService.get_user_id_by_token(access_token=access_token)
+    if not res:
+        return RESPONSE_CODE[404], None
+
+    user = UserService.get_user_detail(user_id=user_id)
+
+    return RESPONSE_CODE[200], user
 
 
 @user_blueprint.route('/details', methods=['GET'], endpoint='user_details')
+@token_required
 def user_details():
     return RESPONSE_CODE[200], None
 

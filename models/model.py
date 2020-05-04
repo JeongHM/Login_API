@@ -22,6 +22,18 @@ class Users(db.Model):
     updated_at = db.Column(db.DateTime(), nullable=False,
                            server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
 
+    @property
+    def serialize(self):
+        return {
+            'name': self.name,
+            'nick_name': self.nickname,
+            'phone': self.phone,
+            'email': self.email,
+            'gender': self.gender,
+            'created_at': self.created_at
+        }
+
+
 class Tokens(db.Model):
     __tablename__ = 'tokens'
     __table_args__ = {
@@ -31,6 +43,7 @@ class Tokens(db.Model):
     }
 
     id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(255), nullable=False)
     access_token = db.Column(db.String(255), nullable=False)
     expired_at = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime(), nullable=False, server_default=db.func.current_timestamp())
