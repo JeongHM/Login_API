@@ -168,3 +168,24 @@ class UserService(object):
             return False, None
 
         return True, user_id
+
+    @staticmethod
+    def get_user_detail(user_id):
+        """
+        User ID를 통한 사용자 정보 추출
+        :param user_id: user id
+        :return: Boolean or User Object
+        """
+        session = db.session()
+
+        try:
+            user = Users.query.filter_by(id=user_id).first()
+
+        except Exception as e:
+            session.rollback()
+            return False
+
+        else:
+            session.close()
+            return user.serialize
+
