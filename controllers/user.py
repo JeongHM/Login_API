@@ -3,6 +3,7 @@ from flask import Blueprint, request
 from utils.decorators import response_format
 from utils.response_code import RESPONSE_CODE
 from services.internals.user import UserService
+from services.internals.token import TokenService
 
 user_blueprint = Blueprint(name='user', import_name=__name__)
 
@@ -40,8 +41,16 @@ def user_registration():
 
 @user_blueprint.route('/login', methods=['POST'], endpoint='user_login')
 def user_login():
+    body = dict(request.json)
+    user = UserService(body=body)
 
-    return RESPONSE_CODE[200], None
+    token = TokenService(body=body)
+    access_token = token.create_token()
+
+    if not access_token or isinstance(access_token, dict):
+        return RESPONSE_CODE[400], None
+
+    return RESPONSE_CODE[200], access_token
 
 
 @user_blueprint.route('/logout', methods=['POST'], endpoint='user_logout')
