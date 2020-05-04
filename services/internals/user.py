@@ -1,4 +1,5 @@
 import re
+import hashlib
 
 from models.model import db, Users
 
@@ -107,6 +108,11 @@ class UserService(object):
 
         return True
 
+    @staticmethod
+    def encrypt_password(password):
+        sha_signature = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        return sha_signature
+
     def create_user(self):
         """
         회원가입한 유저 정보 DB에 저장
@@ -119,6 +125,7 @@ class UserService(object):
         email = self._body.get('email')
         gender = self._body.get('gender')
 
+        password = self.encrypt_password(password=password)
         session = db.session()
 
         try:
