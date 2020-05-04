@@ -90,8 +90,14 @@ def user_detail():
     return RESPONSE_CODE[200], user
 
 
-@user_blueprint.route('/details', methods=['GET'], endpoint='user_details')
+@user_blueprint.route('/detail/list', methods=['GET'], endpoint='user_detail_list')
 @token_required
-def user_details():
-    return RESPONSE_CODE[200], None
+@response_format
+def user_detail_list():
+    query_dict = dict(request.args)
+
+    user_list = UserService.get_user_info_list(**query_dict)
+    if not user_list:
+        return RESPONSE_CODE[400], None
+    return RESPONSE_CODE[200], user_list
 
