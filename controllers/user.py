@@ -42,7 +42,12 @@ def user_registration():
 @user_blueprint.route('/login', methods=['POST'], endpoint='user_login')
 def user_login():
     body = dict(request.json)
+
     user = UserService(body=body)
+
+    res, user_id = user.login()
+    if not res:
+        return RESPONSE_CODE[805], None
 
     token = TokenService(body=body)
     access_token = token.create_token()
