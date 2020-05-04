@@ -15,6 +15,7 @@ def create_app():
     # App Setting
     app = Flask(__name__)
     CORS(app)
+    app.secret_key = os.urandom(16)
     app.config['SQLALCHEMY_DATABASE_URI'] = config['APP']['SQLALCHEMY_DATABASE_URI']
     app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
@@ -26,7 +27,9 @@ def create_app():
     db.create_all(app=app)
 
     from controllers.user import user_blueprint
+    from controllers.token import token_blueprint
     app.register_blueprint(blueprint=user_blueprint, url_prefix='/user')
+    app.register_blueprint(blueprint=token_blueprint, url_prefix='/token')
 
     return app
 
