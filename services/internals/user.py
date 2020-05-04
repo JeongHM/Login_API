@@ -189,3 +189,32 @@ class UserService(object):
             session.close()
             return user.serialize
 
+    @staticmethod
+    def get_user_info_list(**kwargs):
+        """
+        이메일, 이름으로 인한 유저 정보 조회 리스트
+        :param kwargs:
+        :return:
+        """
+        name = kwargs.get('name')
+        email = kwargs.get('email')
+        page = int(kwargs.get('page'))
+        offset = int(kwargs.get('offset'))
+
+        if not page:
+            page = 1
+        if not offset:
+            offset = 15
+
+        if name and email:
+            pass
+
+        if name and not email:
+            users = Users.query.filter_by(name=name).paginate(page, offset, False).items
+            result = {'users': [user.serialize for user in users]}
+            return result
+
+        if not name and email:
+            users = Users.query.filter_by(email=email).paginate(page, offset, False).items
+            result = {'users': [user.serialize for user in users]}
+            return result
