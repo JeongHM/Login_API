@@ -39,5 +39,10 @@ def create_app():
 application = create_app()
 
 
+@application.route('/', methods=['GET'], endpoint='index')
+def index():
+    return 'Hello Login API'
+
+
 if __name__ == '__main__':
     application.run(host='0.0.0.0')
