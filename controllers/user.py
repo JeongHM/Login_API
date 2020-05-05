@@ -69,7 +69,7 @@ def user_logout():
     res = TokenService.delete_token(access_token=access_token)
 
     if not res:
-        return RESPONSE_CODE[404]
+        return RESPONSE_CODE['NOT_FOUND']
 
     return RESPONSE_CODE['SUCCESS'], None
 
@@ -83,7 +83,7 @@ def user_detail():
 
     res, user_id = TokenService.get_user_id_by_token(access_token=access_token)
     if not res:
-        return RESPONSE_CODE[404], None
+        return RESPONSE_CODE['NOT_FOUND'], None
 
     user = UserService.get_user_detail(user_id=user_id)
 
