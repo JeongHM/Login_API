@@ -25,6 +25,7 @@ services:
       - mysql
     ports:
       - '5000:5000'
+      - '3031:3031'
     environment:
       - DB_HOST=mysql
       - DB_USER=root
