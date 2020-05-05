@@ -34,3 +34,15 @@
 2. 실행 후 mysql server, API server 동작
 3. swagger 서버를 사용하기위해 /swagger 내에서 `npm install` -> `node index.js` 실행
 4. API 명세에 맞게 API 사용
+
+```bash
+$ git clone https://github.com/JeongHM/Login_API.git
+
+$ sh 00_build.sh
+
+
+# 새로운 탭을 열어주세요
+$ cd swagger
+$ npm install
+$ node index.js  # 127.0.0.1:3000/docs 접속
+```
