@@ -16,27 +16,27 @@ def user_registration():
     user = UserService(body=body)
 
     if not user.validate_body():
-        return RESPONSE_CODE[400], None
+        return RESPONSE_CODE['MISSING_REQUIRED_VALUE'], None
 
     if not user.validate_name():
-        return RESPONSE_CODE[800], None
+        return RESPONSE_CODE['INVALID_NAME_FORMAT'], None
 
     if not user.validate_nick_name():
-        return RESPONSE_CODE[801], None
+        return RESPONSE_CODE['INVALID_NICK_NAME_FORMAT'], None
 
     if not user.validate_email():
-        return RESPONSE_CODE[802], None
+        return RESPONSE_CODE['INVALID_EMAIL_FORMAT'], None
 
     if not user.validate_phone():
-        return RESPONSE_CODE[803], None
+        return RESPONSE_CODE['INVALID_PHONE_FORMAT'], None
 
     if not user.validate_password():
-        return RESPONSE_CODE[804], None
+        return RESPONSE_CODE['INVALID_PASSWORD_FORMAT'], None
 
     if not user.create_user():
-        return RESPONSE_CODE[400], None
+        return RESPONSE_CODE['MISSING_REQUIRED_VALUE'], None
 
-    return RESPONSE_CODE[200], None
+    return RESPONSE_CODE['SUCCESS'], None
 
 
 @user_blueprint.route('/login', methods=['POST'], endpoint='user_login')
@@ -48,15 +48,15 @@ def user_login():
 
     res, user_id = user.login()
     if not res:
-        return RESPONSE_CODE[805], None
+        return RESPONSE_CODE['LOGIN_FAIL'], None
 
     token = TokenService(user_id=user_id)
     access_token = token.create_token()
 
     if not access_token or not isinstance(access_token, dict):
-        return RESPONSE_CODE[400], None
+        return RESPONSE_CODE['MISSING_REQUIRED_VALUE'], None
 
-    return RESPONSE_CODE[200], access_token
+    return RESPONSE_CODE['SUCCESS'], access_token
 
 
 @user_blueprint.route('/logout', methods=['POST'], endpoint='user_logout')
@@ -71,7 +71,7 @@ def user_logout():
     if not res:
         return RESPONSE_CODE[404]
 
-    return RESPONSE_CODE[200], None
+    return RESPONSE_CODE['SUCCESS'], None
 
 
 @user_blueprint.route('/detail', methods=['GET'], endpoint='user_detail')
@@ -87,7 +87,7 @@ def user_detail():
 
     user = UserService.get_user_detail(user_id=user_id)
 
-    return RESPONSE_CODE[200], user
+    return RESPONSE_CODE['SUCCESS'], user
 
 
 @user_blueprint.route('/detail/list', methods=['GET'], endpoint='user_detail_list')
@@ -98,6 +98,6 @@ def user_detail_list():
 
     user_list = UserService.get_user_info_list(**query_dict)
     if not user_list:
-        return RESPONSE_CODE[400], None
-    return RESPONSE_CODE[200], user_list
+        return RESPONSE_CODE['MISSING_REQUIRED_VALUE'], None
+    return RESPONSE_CODE['SUCCESS'], user_list
 
