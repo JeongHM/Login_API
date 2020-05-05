@@ -1,10 +1,6 @@
 import os
 from flask import Flask
 from flask_cors import CORS
-from configparser import ConfigParser
-
-config = ConfigParser()
-config.read(os.path.abspath(os.path.join(os.path.dirname(__file__), './config.ini')))
 
 
 def create_app():
@@ -16,7 +12,13 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
     app.secret_key = os.urandom(16)
-    app.config['SQLALCHEMY_DATABASE_URI'] = config['APP']['SQLALCHEMY_DATABASE_URI']
+    # app.config['SQLALCHEMY_DATABASE_URI'] = config['APP']['SQLALCHEMY_DATABASE_URI']
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://{}:{}@{}/{}?charset=utf8'.format(
+        os.getenv('DB_USER'),
+        os.getenv('DB_PASSWORD'),
+        os.getenv('DB_HOST'),
+        os.getenv('DB_DATABASE')
+    )
     app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     app.config['CORS_HEADERS'] = 'Content-Type'
@@ -38,4 +40,4 @@ application = create_app()
 
 
 if __name__ == '__main__':
-    application.run(host='127.0.0.1', port=5000, debug=True)
+    application.run(host='0.0.0.0')
