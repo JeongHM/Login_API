@@ -1,0 +1,210 @@
+swagger: '2.0'
+
+info:
+  title: 'Login API'
+  description: '로그인, 로그아웃, 회원정보 조회 API'
+  version: 0.0.1
+  
+tags:
+  - name: 'users'
+    description: 'About User API'
+  - name: 'token'
+    description: 'Aboit Token API'
+    
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: Access_Token
+    in: header
+    
+schemes:
+  - http
+  
+host: 127.0.0.1:5000
+basePath: /
+paths:
+  /user/registration:
+    post:
+      tags:
+        - users
+      summary: '유저 회원가입 API'
+      description: '회원가입을 위한 API <br> <h3>name : 영대소문자 또는 한글 <br> nick_name: 영소문자 <br> email : 이메일 형식 <br> phone : 전화번호 형식 <br> password : 적어도 하나의 영대소문자, 숫자, 특수문자</h3>'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/user_registration'
+      responses:
+        200:
+          description: 'success'
+          
+  /user/login:
+    post:
+      tags:
+        - users
+      summary: '유저 로그인 API'
+      description: '유저 로그인 API <br> <h3> 회원가입 한 email, password 입력 후 access_token 발급 </h3>'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+           $ref: '#/definitions/user_login'
+      responses:
+        200:
+          description: 'success'
+          
+  /user/logout:
+    post:
+      tags:
+        - users
+      summary: '유저 로그아웃 API'
+      description: '유저 로그아웃 API <br> <h3> 로그아웃 시 access_token 삭제 </h3>'
+      security:
+      - api_key: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/user_logout'
+      responses:
+        200:
+          description: 'success'
+          schema:
+            $ref: '#/definitions/200'
+        404:
+          description: 'error'
+          
+  /user/detail:
+    get:
+      tags:
+        - users
+      summary: '본인 정보 조회 API'
+      security:
+      - api_key: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/user_logout'
+      responses:
+        200:
+          description: 'success'
+          schema:
+            $ref: '#/definitions/user_detail'
+            
+  /user/detail/list:
+    get:
+      tags:
+      - users
+      summary: '여러회원 목록 조회 API'
+      security:
+      - api_key: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - in: query
+        name: name
+        type: string
+      - in: query
+        name: email
+        type: string
+      - in: query
+        name: page
+        type: integer
+        required: True
+      - in: query
+        name: offset
+        type: integer
+        required: True
+      responses:
+        200:
+          description: 'success'
+          schema: 
+            $ref: '#/definitions/200'
+    
+          
+      
+definitions:
+  user_detail:
+    type: object
+    properties:
+      name:
+        type: string
+      nick_name:
+        type: string
+      phone:
+        type: string
+        format: phone
+      email:
+        type: string
+        format: email
+      gender:
+        type: integer
+        format: int1
+        example: '0: 입력하지않음, 1: 남자, 2:여자'
+      
+  user_logout:
+    type: object
+    properties:
+      access_token:
+        type: string
+
+  user_login:
+    type: object
+    properties:
+      email:
+        type: string
+        format: email
+      password:
+        type: string
+        
+  user_registration:
+    type: object
+    properties:
+      name:
+        type: string
+      nick_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+        format: phone
+      email:
+        type: string
+        format: email
+      gender:
+        type: integer
+        format: int1
+        example: '0: 입력하지않음, 1: 남자, 2:여자'
+  200:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int5
+        example: 200
+      message:
+        type: string
+        example: 'success'
+      result:
+        type: object
+        example : {}
