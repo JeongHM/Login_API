@@ -201,20 +201,28 @@ class UserService(object):
         page = int(kwargs.get('page'))
         offset = int(kwargs.get('offset'))
 
+        result = None
+
         if not page:
             page = 1
         if not offset:
             offset = 15
 
-        if name and email:
-            pass
+        try:
+            if name and email:
+                users = Users.query.filter_by(name=name, email=email).paginate(page, offset, False).items
+                result = {'users': [user.serialize for user in users]}
 
-        if name and not email:
-            users = Users.query.filter_by(name=name).paginate(page, offset, False).items
-            result = {'users': [user.serialize for user in users]}
-            return result
+            if name and not email:
+                users = Users.query.filter_by(name=name).paginate(page, offset, False).items
+                result = {'users': [user.serialize for user in users]}
 
-        if not name and email:
-            users = Users.query.filter_by(email=email).paginate(page, offset, False).items
-            result = {'users': [user.serialize for user in users]}
+            if not name and email:
+                users = Users.query.filter_by(email=email).paginate(page, offset, False).items
+                result = {'users': [user.serialize for user in users]}
+
+        except Exception as e:
+            return False
+
+        else:
             return result
