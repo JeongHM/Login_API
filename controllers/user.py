@@ -97,7 +97,9 @@ def user_detail_list():
     query_dict = dict(request.args)
 
     user_list = UserService.get_user_info_list(**query_dict)
-    if not user_list:
+
+    if user_list is False:
         return RESPONSE_CODE['MISSING_REQUIRED_VALUE'], None
+
     return RESPONSE_CODE['SUCCESS'], user_list
 
