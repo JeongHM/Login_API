@@ -1,7 +1,8 @@
 import re
 import hashlib
 
-from models.model import db, Users
+from models import db
+from models.users import Users
 
 
 class UserService(object):
