@@ -10,9 +10,8 @@ def create_app():
     """
     # App Setting
     app = Flask(__name__)
-    CORS(app)
+
     app.secret_key = os.urandom(16)
-    # app.config['SQLALCHEMY_DATABASE_URI'] = config['APP']['SQLALCHEMY_DATABASE_URI']
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://{}:{}@{}/{}?charset=utf8'.format(
         os.getenv('DB_USER'),
         os.getenv('DB_PASSWORD'),
@@ -23,15 +22,18 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     app.config['CORS_HEADERS'] = 'Content-Type'
 
-    # DB Setting
-    from models import db
-    db.init_app(app=app)
-    db.create_all(app=app)
+    CORS(app)
 
-    from controllers.user import user_blueprint
-    from controllers.token import token_blueprint
-    app.register_blueprint(blueprint=user_blueprint, url_prefix='/user')
-    app.register_blueprint(blueprint=token_blueprint, url_prefix='/token')
+    # DB Setting
+    with app.app_context():
+        from models import db
+        db.init_app(app=app)
+        db.create_all(app=app)
+
+        from controllers.user import user_blueprint
+        from controllers.token import token_blueprint
+        app.register_blueprint(blueprint=user_blueprint, url_prefix='/user')
+        app.register_blueprint(blueprint=token_blueprint, url_prefix='/token')
 
     return app
 
