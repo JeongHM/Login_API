@@ -24,7 +24,7 @@ def create_app():
     app.config['CORS_HEADERS'] = 'Content-Type'
 
     # DB Setting
-    from models.model import db
+    from models import db
     db.init_app(app=app)
     db.create_all(app=app)
 
