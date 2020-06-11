@@ -1,6 +1,9 @@
 import os
+import logging
+
 from flask import Flask
 from flask_cors import CORS
+from logging.handlers import RotatingFileHandler
 
 
 def create_app():
@@ -18,9 +21,20 @@ def create_app():
         os.getenv('DB_HOST'),
         os.getenv('DB_DATABASE')
     )
+
     app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     app.config['CORS_HEADERS'] = 'Content-Type'
+
+    logger = logging.getLogger(__name__)
+    logger.setLevel(level=logging.INFO)
+    logger_formatter = logging.Formatter(fmt='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s')
+    logger_handler = RotatingFileHandler(filename='./application.log',
+                                         mode='a',
+                                         maxBytes=1024 * 1024 * 5,
+                                         backupCount=5,
+                                         encoding='utf-8')
+    logger_handler.setFormatter(fmt=logger_formatter)
 
     CORS(app)
 
