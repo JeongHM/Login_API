@@ -26,6 +26,7 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     app.config['CORS_HEADERS'] = 'Content-Type'
 
+    # Loggin 설정
     logger = logging.getLogger(__name__)
     logger.setLevel(level=logging.INFO)
     logger_formatter = logging.Formatter(fmt='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s')
@@ -38,16 +39,17 @@ def create_app():
 
     CORS(app)
 
-    # DB Setting
+    # Blueprint 설정
+    from controllers.user import user_blueprint
+    from controllers.token import token_blueprint
+    app.register_blueprint(blueprint=user_blueprint, url_prefix='/user')
+    app.register_blueprint(blueprint=token_blueprint, url_prefix='/token')
+
     with app.app_context():
+        # DB 설정
         from models import db
         db.init_app(app=app)
-        db.create_all(app=app)
-
-        from controllers.user import user_blueprint
-        from controllers.token import token_blueprint
-        app.register_blueprint(blueprint=user_blueprint, url_prefix='/user')
-        app.register_blueprint(blueprint=token_blueprint, url_prefix='/token')
+        db.create_all()
 
     return app
 
@@ -61,4 +63,4 @@ def index():
 
 
 if __name__ == '__main__':
-    application.run(host='0.0.0.0')
+    application.run(host='0.0.0.0', port=5050)
