@@ -1,7 +1,9 @@
 import jwt
-from models.model import db, Tokens
 from datetime import datetime, timedelta
 from Cryptodome import Random
+
+from models import db
+from models.tokens import Tokens
 
 
 class TokenService(object):
