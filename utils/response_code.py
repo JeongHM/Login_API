@@ -7,9 +7,13 @@ RESPONSE_CODE = {
         'status_code': 400,
         'message': '필수값 누락입니다. 필수값을 확인해주세요.'
     },
-    'FAIL_AUTH': {
+    'MISSING_REQUIRED_HEADER': {
         'status_code': 401,
-        'message': '인증에 실패하였습니다. 헤더값에 필수값을 확인해주세요.'
+        'message': '인증에 실패하였습니다. 헤더 필수값이 없습니다.'
+    },
+    'MISSING_TOKEN_HEADER': {
+        'status_code': 401,
+        'message': '인증에 실패하였습니다. 토큰값이 없습니다.'
     },
     'NOT_FOUND': {
         'status_code': 404,
