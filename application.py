@@ -1,7 +1,7 @@
 import os
 import logging
 
-from flask import Flask
+from flask import Flask, current_app, request
 from flask_cors import CORS
 from logging.handlers import RotatingFileHandler
 
@@ -29,13 +29,17 @@ def create_app():
     # Loggin 설정
     logger = logging.getLogger(__name__)
     logger.setLevel(level=logging.INFO)
-    logger_formatter = logging.Formatter(fmt='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s')
+    logger_formatter = logging.Formatter(fmt='[%(asctime)s] %(pathname)s:%(lineno)d %(levelname)s - %(message)s')
     logger_handler = RotatingFileHandler(filename='./application.log',
                                          mode='a',
                                          maxBytes=1024 * 1024 * 5,
                                          backupCount=5,
                                          encoding='utf-8')
     logger_handler.setFormatter(fmt=logger_formatter)
+    logger.addHandler(hdlr=logger_handler)
+
+    app.logger.addHandler(logger_handler)
+    app.logger.setLevel(logging.INFO)
 
     CORS(app)
 
@@ -57,7 +61,18 @@ def create_app():
 application = create_app()
 
 
-@application.route('/', methods=['GET'], endpoint='index')
+@application.before_request
+def before_request():
+    method = request.environ.get('REQUEST_METHOD')
+    host = request.environ.get('HTTP_HOST')
+    path = request.environ.get('PATH_INFO')
+    param = dict(request.args) if request.args else None
+    body = dict(request.json) if request.json else None
+
+    current_app.logger.info(f'[{method}] {host}{path} params: {param} body: {body}')
+
+
+@application.route('/', methods=['GET', 'POST'], endpoint='index')
 def index():
     return 'Hello Login API'
 
